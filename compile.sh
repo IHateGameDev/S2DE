@@ -126,6 +126,7 @@ fi
 
 if [ $? -eq 0 ]; then
     echo "Compilation successful."
+    clear
 else
     echo "Compilation failed."
 fi

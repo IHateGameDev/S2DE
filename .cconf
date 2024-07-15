@@ -1,5 +1,5 @@
 -I/home/ihategamedev/MyFiles/cppProjects/S2DE/
 
 -lthor -lSFGUI -lsfml-graphics -lsfml-window -lsfml-system  -lsfml-audio -lbox2d
-
+S2DEpt/testGame
 S2DEpt/main.cpp
