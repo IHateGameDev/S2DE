@@ -1,7 +1,7 @@
 #include <S2DEL/scene.hpp>
 
 #include <S2DEL/Graphics/GUI/GUISystem.hpp>
-#include <TGUI/Widgets/ChildWindow.hpp>
+#include <TGUI/TGUI.hpp>
 
 
 stde::Scene testScene;
@@ -15,6 +15,7 @@ namespace testSceneRoot
     guiSystem = std::make_unique<stde::GUISystem>(testScene.getGUI(), testScene.getRegistry());
 
     testScene.getGUI().loadWidgetsFromFile("Assets/Forms/halloWorld.tform");
+    testScene.getGUI().get<tgui::Button>("Button")->onPress([]{testScene.getGUI().get<tgui::TextArea>("TextArea")->setText("Hallo! World.");});
   }
 
   void OnEvent(sf::Event event)

@@ -56,7 +56,7 @@ ChildWindow.ChildWindow1 {
         }
     }
 
-    TextArea.TextArea1 {
+    TextArea.TextArea {
         HorizontalScrollbarPolicy = Never;
         MaximumCharacters = 0;
         Position = (0, 20);
