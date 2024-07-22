@@ -2,57 +2,81 @@
 #define GAMEENGINE_ENGINE_HPP
 
 #include "scene.hpp"
+#include <vector>
 
 namespace stde
 {
   class GameEngine
   {
-    private:
-      uint16_t playedScene;
+  private:
+    uint16_t playedScene;
 
-      sf::RenderWindow renderWindow;
-      sf::Clock clock;
+    Scene** scenes;
+    uint16_t sceneCount;
 
-      stde::Scene** scenes;
+    sf::RenderWindow renderWindow;
+    sf::Clock clock;
 
-    public:
-      GameEngine(stde::Scene** scenes, sf::VideoMode videoMode, const sf::String& title, uint16_t startScene = 0u, sf::Uint32 style = 7u)
-        :scenes(scenes), playedScene(startScene)
-      {this->renderWindow.create(videoMode, title, style);}
+    tgui::Gui guiSpace;
 
-      int play()
+  public:
+    GameEngine(Scene** scenes, uint16_t sceneCount, sf::VideoMode videoMode, const sf::String& title, uint16_t startScene = 0u, sf::Uint32 style = 7u)
+      : scenes(scenes), sceneCount(sceneCount), playedScene(startScene)
+    {
+      this->renderWindow.create(videoMode, title, style);
+
+      guiSpace.setTarget(this->renderWindow);
+
+      if (playedScene >= sceneCount)
+        playedScene = 0;
+    }
+
+    int play()
+    {
+      for (uint16_t i = 0; i < sceneCount; i++)
       {
-        for(uint16_t i = 0; i < sizeof(this->scenes) / sizeof(this->scenes[0]); i++)
-          this->scenes[i]->Init(this->renderWindow);
+        scenes[i]->load(this->renderWindow, this->guiSpace);
+        scenes[i]->Init();
+      }
 
-        this->scenes[playedScene]->Start();
+      scenes[playedScene]->Start();
 
-        while(this->renderWindow.isOpen())
+      while (this->renderWindow.isOpen())
+      {
+        sf::Event event;
+
+        while (this->renderWindow.pollEvent(event))
         {
-          sf::Event event;
-          while(this->renderWindow.pollEvent(event))
-          {
-            if(event.type == sf::Event::Closed)
-              renderWindow.close();
-            this->scenes[playedScene]->OnEvent(event);
-          }
-          
-          this->scenes[playedScene]->Update(clock.restart());
+          if (event.type == sf::Event::Closed)
+            renderWindow.close();
 
-          this->renderWindow.clear();
-          this->scenes[playedScene]->OnDraw();
-          this->renderWindow.display();
+          this->scenes[playedScene]->OnEvent(event);
         }
-        
-        return 0;
+
+        this->scenes[playedScene]->Update(clock.restart());
+
+        this->renderWindow.clear();
+
+        this->scenes[playedScene]->OnDraw();
+
+        this->renderWindow.display();
       }
 
-      void launchScene(uint16_t Id)
+      return 0;
+    }
+
+    void launchScene(uint16_t Id)
+    {
+      if (Id < sceneCount)
       {
+        this->scenes[playedScene]->End();
+        
         this->playedScene = Id;
+
         this->scenes[playedScene]->Start();
       }
+    }
   };
 }
 
-#endif //GAMEENGINE_ENGINE_HPP
+#endif // GAMEENGINE_ENGINE_HPP

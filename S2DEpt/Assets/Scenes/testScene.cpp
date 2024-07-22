@@ -1,19 +1,47 @@
 #include <S2DEL/scene.hpp>
 
+#include <S2DEL/Graphics/GUI/GUISystem.hpp>
+#include <TGUI/Widgets/ChildWindow.hpp>
+
+
 stde::Scene testScene;
 
-namespace testSceneRootFunctions
-{
-  void Init(entt::registry& registry, sfg::SFGUI& sfgui, sf::RenderWindow& renderWindow, b2World& physicWorld)
-  {
+std::unique_ptr<stde::GUISystem> guiSystem;
 
+namespace testSceneRoot
+{
+  void Init()
+  {
+    guiSystem = std::make_unique<stde::GUISystem>(testScene.getGUI(), testScene.getRegistry());
+
+    testScene.getGUI().loadWidgetsFromFile("Assets/Forms/halloWorld.tform");
+  }
+
+  void OnEvent(sf::Event event)
+  {
+    testScene.getGUI().handleEvent(event);
   }
 
   void OnDraw()
   {
-
+    testScene.getGUI().draw();
   }
-}
 
-std::unique_ptr<stde::REGISTRY_CIF> testSceneAFR(std::make_unique<stde::REGISTRY_CIF>(testScene, testSceneRootFunctions::Init));
-std::unique_ptr<stde::REGISTRY_CODF> testSceneODFR(std::make_unique<stde::REGISTRY_CODF>(testScene, testSceneRootFunctions::OnDraw));
+  void End()
+  {
+    testScene.getGUI().removeAllWidgets();
+  }
+
+  class FI
+  {
+    public:
+      FI()
+      {
+        testScene.REGISTRY_CIF(Init);
+        testScene.REGISTRY_COEF(OnEvent);
+        testScene.REGISTRY_CODF(OnDraw);
+        testScene.REGISTRY_CEF(End);
+      }
+  };
+}
+testSceneRoot::FI testSceneFI;
